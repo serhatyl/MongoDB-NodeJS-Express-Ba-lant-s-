@@ -28,6 +28,7 @@ router.post('/new', function (req, res, next) {
 });
 
 //search route
+//find
 router.get('/search', (req, res) => {
     Book.find({ isPublished: false, title: 'Da Vinci' }, 'title , comments', (err, data) => {
         res.json(data);
@@ -35,8 +36,17 @@ router.get('/search', (req, res) => {
 });
 
 
+//findOne
 router.get('/searchOne', (req, res) => {
     Book.findOne({ title: 'Da Vinci' }, (err, data) => {
+        res.json(data);
+    });
+});
+
+
+//findById
+router.get('/searchById', (req, res) => {
+    Book.findById('5a84401f3cc9353b24a12f62', (err, data) => {
         res.json(data);
     });
 });
