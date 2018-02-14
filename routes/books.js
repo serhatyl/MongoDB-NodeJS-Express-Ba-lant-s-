@@ -5,7 +5,7 @@ const Book = require('../models/Book');
 
 router.post('/new', function (req, res, next) {
     const book = new Book({
-        title: 'Da Vinci',
+        title: 'PHP',
         isPublished: false,
         comments: [
             { message: 'Harika bir kitap' }, { message: 'Ben pek beğenmedim' }
@@ -26,4 +26,20 @@ router.post('/new', function (req, res, next) {
     });
 
 });
+
+//search route
+router.get('/search', (req, res) => {
+    Book.find({ isPublished: false, title: 'Da Vinci' }, 'title , comments', (err, data) => {
+        res.json(data);
+    });
+});
+
+
+router.get('/searchOne', (req, res) => {
+    Book.findOne({ title: 'Da Vinci' }, (err, data) => {
+        res.json(data);
+    });
+});
+
+
 module.exports = router;
