@@ -12,12 +12,12 @@ var users = require('./routes/users');
 var app = express();
 
 mongoose.connect('mongodb://localhost/udemy')
-  .then(() => {
-    console.log('DB Connection Succeeded');
-  })
-  .catch((err) => {
-    console.log('DB Connection Failed');
-  });
+mongoose.connection.on('open', () => {
+  console.log('MongoDB Connected');
+});
+mongoose.connection.on('error', (err) => {
+  console.log('MongoDB: Error', err);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
