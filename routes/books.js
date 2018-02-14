@@ -52,4 +52,13 @@ router.get('/searchById', (req, res) => {
 });
 
 
+//güncelleme işlemi birden fazla alan varsa ilk bulduğu kayıdı günceller
+// birden fazla alanı güncellemek isterseniz multi:true eklemek gerekiyor
+router.put('/update', (req, res) => {
+    Book.update({ isPublished: false }, { isPublished: true }, { multi: true }, (err, data) => {
+        res.json(data);
+    });
+});
+
+
 module.exports = router;
