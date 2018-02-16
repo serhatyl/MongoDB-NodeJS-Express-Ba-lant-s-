@@ -3,9 +3,9 @@ var router = express.Router();
 //Models
 const Book = require("../models/Book");
 
-router.post("/new", function(req, res, next) {
+router.post("/new", function (req, res, next) {
   const book = new Book({
-    title: "PHP",
+    title: "Üçüncü",
     isPublished: false,
     comments: [
       { message: "Harika bir kitap" },
@@ -68,15 +68,48 @@ router.put("/update", (req, res) => {
 
 router.put("/updateById", (req, res) => {
   Book.findByIdAndUpdate(
-    "5a84958d2e4d921ad823c243",
+    "5a86ea7eeab3cf208c3ce0ed",
     {
-      title: "NodeJS Kitabı",
-      "meta.favs": 11
+      "meta.favs": 13
     },
     (err, data) => {
       res.json(data);
     }
   );
+});
+
+
+//silme işlemi
+
+//findById
+router.delete('/remove', (req, res) => {
+  Book.findById('5a84401f3cc9353b24a12f62', (err, book) => {
+    book.remove((err, data) => {
+      res.json(data);
+    });
+  });
+});
+
+//findOneAndRemove - ispublished true olanlardan ilk bulduğunu sildi
+router.delete('/removefindoneandremove', (req, res) => {
+  Book.findOneAndRemove({ isPublished: true }, (err, data) => {
+    res.json(data);
+  });
+});
+
+//title'ı başlangıç olan tüm kayıtları siler
+router.delete('/routerremove', (req, res) => {
+  Book.remove({ title: 'Başlangıç' }, (err, data) => {
+    res.json(data);
+  });
+});
+
+
+//sort - sıralama işlemi
+router.get('/sort', (req, res) => {
+  Book.find({}, (err, data) => {
+    res.json(data);
+  }).sort({ 'meta.favs': -1, 'title': 1 }); //1 yaparsak seçili alanı küçükten büyüğe sıralar -1 yaparsak büyükten küçüğe sıralar
 });
 
 module.exports = router;
