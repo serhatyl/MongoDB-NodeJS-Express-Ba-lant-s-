@@ -3,10 +3,11 @@ var router = express.Router();
 //Models
 const Book = require("../models/Book");
 
-router.post("/new", function (req, res, next) {
+router.post("/new", function(req, res, next) {
   const book = new Book({
-    title: "Üçüncü",
+    title: "Da Vinci",
     isPublished: false,
+    category: "Story",
     comments: [
       { message: "Harika bir kitap" },
       { message: "Ben pek beğenmedim" }
@@ -78,12 +79,11 @@ router.put("/updateById", (req, res) => {
   );
 });
 
-
 //silme işlemi
 
 //findById
-router.delete('/remove', (req, res) => {
-  Book.findById('5a84401f3cc9353b24a12f62', (err, book) => {
+router.delete("/remove", (req, res) => {
+  Book.findById("5a84401f3cc9353b24a12f62", (err, book) => {
     book.remove((err, data) => {
       res.json(data);
     });
@@ -91,25 +91,76 @@ router.delete('/remove', (req, res) => {
 });
 
 //findOneAndRemove - ispublished true olanlardan ilk bulduğunu sildi
-router.delete('/removefindoneandremove', (req, res) => {
+router.delete("/removefindoneandremove", (req, res) => {
   Book.findOneAndRemove({ isPublished: true }, (err, data) => {
     res.json(data);
   });
 });
 
 //title'ı başlangıç olan tüm kayıtları siler
-router.delete('/routerremove', (req, res) => {
-  Book.remove({ title: 'Başlangıç' }, (err, data) => {
+router.delete("/routerremove", (req, res) => {
+  Book.remove({ title: "Başlangıç" }, (err, data) => {
     res.json(data);
   });
 });
 
-
 //sort - sıralama işlemi
-router.get('/sort', (req, res) => {
+router.get("/sort", (req, res) => {
   Book.find({}, (err, data) => {
     res.json(data);
-  }).sort({ 'meta.favs': -1, 'title': 1 }); //1 yaparsak seçili alanı küçükten büyüğe sıralar -1 yaparsak büyükten küçüğe sıralar
+  }).sort({ "meta.favs": -1, title: 1 }); //1 yaparsak seçili alanı küçükten büyüğe sıralar -1 yaparsak büyükten küçüğe sıralar
 });
 
 module.exports = router;
+
+//limit and skip
+router.get("/limitandskip", (req, res) => {
+  Book.find({}, (err, data) => {
+    res.json(data);
+  })
+    .skip(1) //1.kayıdı atla 2 tane göster anlamına geliyor
+    .limit(2);
+});
+
+//aggregate
+//match - eşleştirme
+//group
+//project sadece istenilen alanları getirir
+//sort
+router.get("/aggregate", (req, res) => {
+  Book.aggregate(
+    [
+      {
+        $match: { isPublished: false }
+      },
+      // {
+      //   $group: {
+      //     _id: "$category",
+      //     adet: { $sum: 1 }
+      //   }
+      // },
+      {
+        $project: {
+          //sadece istenilen alanlar gelir
+          title: 1,
+          meta: 1
+        }
+      },
+      {
+        $sort: {
+          //sıralama işlemi
+          title: 1
+        }
+      },
+      {
+        $limit: 2
+      },
+      {
+        $skip: 1
+      }
+    ],
+    (err, result) => {
+      res.json(result);
+    }
+  );
+});
